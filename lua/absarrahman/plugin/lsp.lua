@@ -1,5 +1,4 @@
 return {
-	{'folke/tokyonight.nvim'},
 	{'williamboman/mason.nvim'},
 	{'williamboman/mason-lspconfig.nvim'},
 	-- LSP Support
