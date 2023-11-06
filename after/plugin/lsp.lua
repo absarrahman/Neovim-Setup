@@ -17,16 +17,22 @@ end)
 
 require('mason').setup({})
 require('mason-lspconfig').setup({
-  -- list of lsp, npm is needed for using pyright
-  ensure_installed = {'pyright','rust_analyzer', 'lua_ls'},
-  handlers = {
-    lsp_zero.default_setup,
-    lua_ls = function()
-      local lua_opts = lsp_zero.nvim_lua_ls()
-      require('lspconfig').lua_ls.setup(lua_opts)
-    end,
-  }
-})
+    -- list of lsp, npm is needed for using pyright
+    ensure_installed = {
+        'pyright',
+        'rust_analyzer',
+        'lua_ls',
+        'html',
+        'cssls',
+        'tsserver'},
+        handlers = {
+            lsp_zero.default_setup,
+            lua_ls = function()
+                local lua_opts = lsp_zero.nvim_lua_ls()
+                require('lspconfig').lua_ls.setup(lua_opts)
+            end,
+        }
+    })
 
 local cmp = require('cmp')
 local cmp_select = {behavior = cmp.SelectBehavior.Select}
