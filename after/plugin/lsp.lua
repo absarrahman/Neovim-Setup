@@ -67,6 +67,7 @@ require('mason-lspconfig').setup({
         'pyright',
         'rust_analyzer',
         'lua_ls',
+        'clangd',
         'html',
         'cssls',
         'tsserver'},
