@@ -6,6 +6,9 @@ nvimtree.setup {
     hijack_cursor = true,
     hijack_unnamed_buffer_when_opening = false,
     sync_root_with_cwd = true,
+    diagnostics = {
+        enable = true,
+    },
     update_focused_file = {
         enable = true,
         update_root = false,
@@ -42,7 +45,7 @@ nvimtree.setup {
                 file = true,
                 folder = true,
                 folder_arrow = true,
-                git = false,
+                git = true,
             },
 
             glyphs = {
