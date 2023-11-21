@@ -74,3 +74,5 @@ nvimtree.setup {
         },
     }
 }
+
+require("lsp-file-operations").setup()
