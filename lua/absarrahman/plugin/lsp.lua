@@ -14,6 +14,15 @@ return {
             {'hrsh7th/cmp-nvim-lsp'},
         }
     },
+    -- Commenting out
+    {
+        'numToStr/Comment.nvim',
+        event = {
+            "BufReadPre",
+            "BufNewFile",
+        },
+        config = true
+    },
     -- Autocompletion
     {
         'hrsh7th/nvim-cmp',
@@ -23,7 +32,7 @@ return {
             {'saadparwaiz1/cmp_luasnip'},
             {'hrsh7th/cmp-nvim-lsp'},
             { "rafamadriz/friendly-snippets" },
-            {'RobertBrunhage/flutter-riverpod-snippets'}
+            {'RobertBrunhage/flutter-riverpod-snippets'},
         },
         config = function ()
 
