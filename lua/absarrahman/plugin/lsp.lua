@@ -33,6 +33,7 @@ return {
             {'hrsh7th/cmp-nvim-lsp'},
             { "rafamadriz/friendly-snippets" },
             {'RobertBrunhage/flutter-riverpod-snippets'},
+            {'Nash0x7E2/awesome-flutter-snippets'},
         },
         config = function ()
 
