@@ -66,7 +66,6 @@ require('mason-lspconfig').setup({
     -- list of lsp, npm is needed for using pyright
     ensure_installed = {
         'pyright',
-        'rust_analyzer',
         'lua_ls',
         'clangd',
         'html',
