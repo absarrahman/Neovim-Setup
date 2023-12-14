@@ -1,5 +1,7 @@
 local nvimtree = require('nvim-tree')
 
+vim.keymap.set("n", "<leader>ex", ":NvimTreeToggle<CR>")
+
 nvimtree.setup {
     disable_netrw = true,
     hijack_netrw = true,
