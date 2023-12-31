@@ -71,6 +71,7 @@ require('mason-lspconfig').setup({
         'clangd',
         'html',
         'cssls',
+        'jsonls',
         'tsserver'},
     handlers = {
         lsp_zero.default_setup,
@@ -80,3 +81,17 @@ require('mason-lspconfig').setup({
         end,
     }
 })
+
+-- Tab stops. Plz dont judge.
+
+vim.api.nvim_exec([[
+  autocmd FileType json setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
+]], false)
+
+vim.api.nvim_exec([[
+  autocmd FileType dart setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
+]], false)
+
+vim.api.nvim_exec([[
+  autocmd FileType cpp setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
+]], false)
