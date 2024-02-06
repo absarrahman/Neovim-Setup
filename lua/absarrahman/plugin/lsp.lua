@@ -1,6 +1,6 @@
 return {
-    {'williamboman/mason.nvim'},
-    {'williamboman/mason-lspconfig.nvim'},
+    { 'williamboman/mason.nvim' },
+    { 'williamboman/mason-lspconfig.nvim' },
     -- LSP Support
     {
         'VonHeikemen/lsp-zero.nvim',
@@ -11,37 +11,97 @@ return {
     {
         'neovim/nvim-lspconfig',
         dependencies = {
-            {'hrsh7th/cmp-nvim-lsp'},
+            { 'hrsh7th/cmp-nvim-lsp' },
         }
     },
     {
-        "simrat39/rust-tools.nvim",
+        "absarrahman/rustaceanvim",
+        branch = "fixFilePathSpace",
         ft = "rust",
         dependencies = "neovim/nvim-lspconfig",
-        config = function ()
-            local rt = require("rust-tools")
-            local mason_registry = require("mason-registry")
+        config = function()
+            vim.g.rustaceanvim = function()
+                local mason_registry = require("mason-registry")
 
-            -- Need codelldb dap from mason
-            local codelldb = mason_registry.get_package("codelldb")
-            local extension_path = codelldb:get_install_path() .. "/extension/"
-            local codelldb_path = extension_path .. "adapter/codelldb"
-            local liblldb_path = extension_path .. "lldb/lib/liblldb.dylib"
+                -- Need codelldb dap from mason
+                local codelldb = mason_registry.get_package("codelldb")
+                local extension_path = codelldb:get_install_path() .. "/extension/"
+                local codelldb_path = extension_path .. "adapter/codelldb"
+                local liblldb_path = extension_path .. "lldb/lib/liblldb.dylib"
+                return {
+                    dap = {
+                        adapter = require('rustaceanvim.config').get_codelldb_adapter(codelldb_path, liblldb_path),
+                    },
 
-            rt.setup({
-                capabilities = require("cmp_nvim_lsp").default_capabilities(),
-                server = {
-                    on_attach = function(_, bufnr)
-                        -- Hover actions
-                        vim.keymap.set("n", "K", rt.hover_actions.hover_actions, { buffer = bufnr })
-                        -- Code action groups
-                        vim.keymap.set("n", "<Leader>vca", rt.code_action_group.code_action_group, { buffer = bufnr })
-                    end,
-                },
-                dap = {
-                    adapter = require("rust-tools.dap").get_codelldb_adapter(codelldb_path, liblldb_path),
-                },
-            })
+                    server = {
+                        on_attach = function(_, bufnr)
+                            vim.lsp.inlay_hint.enable(bufnr, true)
+                            vim.keymap.set("n", "K", "<cmd>RustLSP hover actions<cr>", { buffer = bufnr })
+                            -- Code action groups
+                            vim.keymap.set("n", "<Leader>vca", "<cmd>RustLsp codeAction<cr>", { buffer = bufnr })
+                        end,
+                        settings = {
+                            -- rust-analyzer language server configuration
+                            ["rust-analyzer"] = {
+                                cargo = {
+                                    allFeatures = true,
+                                    loadOutDirsFromCheck = true,
+                                    runBuildScripts = true,
+                                },
+                                -- Add clippy lints for Rust.
+                                checkOnSave = {
+                                    allFeatures = true,
+                                    command = "clippy",
+                                    extraArgs = { "--no-deps" },
+                                },
+                                procMacro = {
+                                    enable = true,
+                                    ignored = {
+                                        ["async-trait"] = { "async_trait" },
+                                        ["napi-derive"] = { "napi" },
+                                        ["async-recursion"] = { "async_recursion" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    tools = {
+                        on_initialized = function()
+                            vim.cmd([[
+                  augroup RustLSP
+                    autocmd CursorHold                      *.rs silent! lua vim.lsp.buf.document_highlight()
+                    autocmd CursorMoved,InsertEnter         *.rs silent! lua vim.lsp.buf.clear_references()
+                    autocmd BufEnter,CursorHold,InsertLeave *.rs silent! lua vim.lsp.codelens.refresh()
+                  augroup END
+                ]])
+                        end,
+                    },
+                }
+            end
+
+            -- local rt = require("rust-tools")
+            -- local mason_registry = require("mason-registry")
+            --
+            -- -- Need codelldb dap from mason
+            -- local codelldb = mason_registry.get_package("codelldb")
+            -- local extension_path = codelldb:get_install_path() .. "/extension/"
+            -- local codelldb_path = extension_path .. "adapter/codelldb"
+            -- local liblldb_path = extension_path .. "lldb/lib/liblldb.dylib"
+            --
+            -- rt.setup({
+            --     capabilities = require("cmp_nvim_lsp").default_capabilities(),
+            --     server = {
+            --         on_attach = function(_, bufnr)
+            --             -- Hover actions
+            --             vim.keymap.set("n", "K", rt.hover_actions.hover_actions, { buffer = bufnr })
+            --             -- Code action groups
+            --             vim.keymap.set("n", "<Leader>vca", rt.code_action_group.code_action_group, { buffer = bufnr })
+            --         end,
+            --     },
+            --     dap = {
+            --         adapter = require("rust-tools.dap").get_codelldb_adapter(codelldb_path, liblldb_path),
+            --     },
+            -- })
         end
     },
     -- Commenting out
@@ -58,15 +118,14 @@ return {
         'hrsh7th/nvim-cmp',
         event = 'InsertEnter',
         dependencies = {
-            {'L3MON4D3/LuaSnip'},
-            {'saadparwaiz1/cmp_luasnip'},
-            {'hrsh7th/cmp-nvim-lsp'},
+            { 'L3MON4D3/LuaSnip' },
+            { 'saadparwaiz1/cmp_luasnip' },
+            { 'hrsh7th/cmp-nvim-lsp' },
             { "rafamadriz/friendly-snippets" },
-            {'RobertBrunhage/flutter-riverpod-snippets'},
-            {'Nash0x7E2/awesome-flutter-snippets'},
+            { 'RobertBrunhage/flutter-riverpod-snippets' },
+            { 'Nash0x7E2/awesome-flutter-snippets' },
         },
-        config = function ()
-
+        config = function()
             local cmp = require('cmp')
             local luasnip = require('luasnip')
             local lsp_zero = require('lsp-zero')
