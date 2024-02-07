@@ -15,8 +15,8 @@ return {
         }
     },
     {
-        "absarrahman/rustaceanvim",
-        branch = "fixFilePathSpace",
+        "mrcjkb/rustaceanvim",
+        version = '^4',
         ft = "rust",
         dependencies = {
             "neovim/nvim-lspconfig",
@@ -44,9 +44,11 @@ return {
                         on_attach = function(client, bufnr)
                             require("lsp-inlayhints").on_attach(client, bufnr)
 
-                            vim.keymap.set("n", "K","<cmd>lua vim.cmd.RustLsp { 'hover', 'actions' }<cr>", { buffer = bufnr })
+                            vim.keymap.set("n", "K", "<cmd>lua vim.cmd.RustLsp { 'hover', 'actions' }<cr>",
+                                { buffer = bufnr })
                             -- Code action groups
-                            vim.keymap.set("n", "<Leader>vca", "<cmd>lua vim.cmd.RustLsp('codeAction')<cr>", { buffer = bufnr })
+                            vim.keymap.set("n", "<Leader>vca", "<cmd>lua vim.cmd.RustLsp('codeAction')<cr>",
+                                { buffer = bufnr })
                         end,
                         settings = {
                             -- rust-analyzer language server configuration
