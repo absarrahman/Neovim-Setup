@@ -18,7 +18,15 @@ return {
         "absarrahman/rustaceanvim",
         branch = "fixFilePathSpace",
         ft = "rust",
-        dependencies = "neovim/nvim-lspconfig",
+        dependencies = {
+            "neovim/nvim-lspconfig",
+            "mfussenegger/nvim-dap",
+            {
+                "lvimuser/lsp-inlayhints.nvim",
+                config = true,
+
+            }
+        },
         config = function()
             vim.g.rustaceanvim = function()
                 local mason_registry = require("mason-registry")
@@ -32,13 +40,13 @@ return {
                     dap = {
                         adapter = require('rustaceanvim.config').get_codelldb_adapter(codelldb_path, liblldb_path),
                     },
-
                     server = {
-                        on_attach = function(_, bufnr)
-                            vim.lsp.inlay_hint.enable(bufnr, true)
-                            vim.keymap.set("n", "K", "<cmd>RustLSP hover actions<cr>", { buffer = bufnr })
+                        on_attach = function(client, bufnr)
+                            require("lsp-inlayhints").on_attach(client, bufnr)
+
+                            vim.keymap.set("n", "K","<cmd>lua vim.cmd.RustLsp { 'hover', 'actions' }<cr>", { buffer = bufnr })
                             -- Code action groups
-                            vim.keymap.set("n", "<Leader>vca", "<cmd>RustLsp codeAction<cr>", { buffer = bufnr })
+                            vim.keymap.set("n", "<Leader>vca", "<cmd>lua vim.cmd.RustLsp('codeAction')<cr>", { buffer = bufnr })
                         end,
                         settings = {
                             -- rust-analyzer language server configuration
@@ -64,17 +72,6 @@ return {
                                 },
                             },
                         },
-                    },
-                    tools = {
-                        on_initialized = function()
-                            vim.cmd([[
-                  augroup RustLSP
-                    autocmd CursorHold                      *.rs silent! lua vim.lsp.buf.document_highlight()
-                    autocmd CursorMoved,InsertEnter         *.rs silent! lua vim.lsp.buf.clear_references()
-                    autocmd BufEnter,CursorHold,InsertLeave *.rs silent! lua vim.lsp.codelens.refresh()
-                  augroup END
-                ]])
-                        end,
                     },
                 }
             end
