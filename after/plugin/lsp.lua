@@ -71,6 +71,8 @@ require('mason-lspconfig').setup({
         'clangd',
         'html',
         'cssls',
+        'tailwindcss',
+        'cssmodules_ls',
         'jsonls',
         'tsserver'},
     handlers = {
@@ -82,16 +84,45 @@ require('mason-lspconfig').setup({
     }
 })
 
+lspconfig.cssmodules_ls.setup {
+    on_attach = function (client, bfnr)
+        -- avoid accepting `definitionProvider` responses from this LSP
+        client.server_capabilities.definitionProvider = false
+        on_attach(client, bfnr)
+    end,
+}
+
 -- Tab stops. Plz dont judge.
 
-vim.api.nvim_exec([[
+vim.cmd[[
   autocmd FileType json setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
-]], false)
+]]
 
-vim.api.nvim_exec([[
+vim.cmd[[
   autocmd FileType dart setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
-]], false)
+]]
 
-vim.api.nvim_exec([[
+vim.cmd[[
   autocmd FileType cpp setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
-]], false)
+]]
+
+
+vim.cmd[[
+  autocmd FileType javascript setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
+]]
+
+
+vim.cmd[[
+  autocmd FileType javascriptreact setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
+]]
+
+
+vim.cmd[[
+  autocmd FileType typescript setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
+]]
+
+
+vim.cmd[[
+  autocmd FileType typescriptreact setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
+]]
+
