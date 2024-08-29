@@ -73,6 +73,7 @@ require('mason-lspconfig').setup({
         'cssls',
         'tailwindcss',
         'cssmodules_ls',
+        'gopls',
         'jsonls',
         'tsserver'},
     handlers = {
@@ -100,6 +101,10 @@ vim.cmd[[
 
 vim.cmd[[
   autocmd FileType dart setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
+]]
+
+vim.cmd[[
+  autocmd FileType python setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
 ]]
 
 vim.cmd[[
