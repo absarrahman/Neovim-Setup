@@ -1,5 +1,6 @@
 local dap =  require("dap")
 local dapui = require("dapui")
+local dapgo = require('dap-go')
 
 vim.keymap.set("n", "<F5>", ":lua require'dap'.continue()<CR>")
 vim.keymap.set("n", "<F10>", ":lua require'dap'.step_over()<CR>")
@@ -52,6 +53,10 @@ dap.configurations.dart = {
 }
 
 dapui.setup()
+-- Don't forget to add in zsh 
+-- export GOPATH="$HOME/go"
+-- export PATH="$GOPATH/bin:$PATH"
+dapgo.setup()
 
 dap.listeners.after.event_initialized["dapui_config"] = function()
     dapui.open()
