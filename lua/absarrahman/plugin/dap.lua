@@ -6,6 +6,7 @@ return {
             "leoluz/nvim-dap-go",
         },
     },
+    { "nvim-neotest/nvim-nio" },
     {
         "leoluz/nvim-dap-go",
         ft = "go",
