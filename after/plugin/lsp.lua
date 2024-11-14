@@ -75,7 +75,7 @@ require('mason-lspconfig').setup({
         'cssmodules_ls',
         'gopls',
         'jsonls',
-        'tsserver'},
+        'ts_ls'},
     handlers = {
         lsp_zero.default_setup,
         lua_ls = function()
