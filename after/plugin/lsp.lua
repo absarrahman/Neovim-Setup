@@ -1,56 +1,59 @@
-local lsp_zero = require('lsp-zero')
-local lspconfig = require('lspconfig')
+-- on_attach via autocmd (replaces lsp-zero's on_attach)
+vim.api.nvim_create_autocmd("LspAttach", {
+    callback = function(event)
+        local opts = { buffer = event.buf, remap = false }
 
-local on_attach = function(client, bufnr)
-    local opts = {buffer = bufnr, remap = false}
+        vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end, opts)
+        vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end, opts)
+        vim.keymap.set("n", "<leader>vws", function() vim.lsp.buf.workspace_symbol() end, opts)
+        vim.keymap.set("n", "<leader>vd", function() vim.diagnostic.open_float() end, opts)
+        vim.keymap.set("n", "[d", function() vim.diagnostic.goto_next() end, opts)
+        vim.keymap.set("n", "]d", function() vim.diagnostic.goto_prev() end, opts)
+        vim.keymap.set("n", "<leader>vca", function() vim.lsp.buf.code_action() end, opts)
+        vim.keymap.set("n", "<leader>vrr", function() vim.lsp.buf.references() end, opts)
+        vim.keymap.set("n", "<leader>vrn", function() vim.lsp.buf.rename() end, opts)
+        vim.keymap.set("i", "<C-h>", function() vim.lsp.buf.signature_help() end, opts)
+        vim.keymap.set("n", "=", function() vim.lsp.buf.format() end, opts)
+    end
+})
 
-    vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end, opts)
-    vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end, opts)
-    vim.keymap.set("n", "<leader>vws", function() vim.lsp.buf.workspace_symbol() end, opts)
-    vim.keymap.set("n", "<leader>vd", function() vim.diagnostic.open_float() end, opts)
-    vim.keymap.set("n", "[d", function() vim.diagnostic.goto_next() end, opts)
-    vim.keymap.set("n", "]d", function() vim.diagnostic.goto_prev() end, opts)
-    vim.keymap.set("n", "<leader>vca", function() vim.lsp.buf.code_action() end, opts)
-    vim.keymap.set("n", "<leader>vrr", function() vim.lsp.buf.references() end, opts)
-    vim.keymap.set("n", "<leader>vrn", function() vim.lsp.buf.rename() end, opts)
-    vim.keymap.set("i", "<C-h>", function() vim.lsp.buf.signature_help() end, opts)
-    vim.keymap.set("n", "=", function () vim.lsp.buf.format() end,opts)
-end
-
-lsp_zero.set_preferences({
-    suggest_lsp_servers = false,
-    sign_icons = {
-        error = 'E',
-        warn = 'W',
-        hint = 'H',
-        info = 'I'
+-- Signs
+vim.diagnostic.config({
+    signs = {
+        text = {
+            [vim.diagnostic.severity.ERROR] = "E",
+            [vim.diagnostic.severity.WARN]  = "W",
+            [vim.diagnostic.severity.HINT]  = "H",
+            [vim.diagnostic.severity.INFO]  = "I",
+        }
     }
 })
 
---
--- Flutter specifics
---
+vim.lsp.config('*', {
+    capabilities = vim.lsp.protocol.make_client_capabilities(),
+})
 
-local dart_on_attach = function(client, bufnr)
-    local opts = {buffer = bufnr, remap = false}
+-- lua_ls
+vim.lsp.config('lua_ls', {
+    settings = {
+        Lua = {
+            runtime = { version = 'LuaJIT' },
+            workspace = {
+                checkThirdParty = false,
+                library = vim.api.nvim_get_runtime_file("", true),
+            },
+            telemetry = { enable = false },
+            diagnostics = { globals = { 'vim' } },
+        }
+    }
+})
 
-    vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end, opts)
-    vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end, opts)
-    vim.keymap.set("n", "<leader>vws", function() vim.lsp.buf.workspace_symbol() end, opts)
-    vim.keymap.set("n", "<leader>vd", function() vim.diagnostic.open_float() end, opts)
-    vim.keymap.set("n", "[d", function() vim.diagnostic.goto_next() end, opts)
-    vim.keymap.set("n", "]d", function() vim.diagnostic.goto_prev() end, opts)
-    vim.keymap.set("n", "<leader>vca", function() vim.lsp.buf.code_action() end, opts)
-    vim.keymap.set("n", "<leader>vrr", function() vim.lsp.buf.references() end, opts)
-    vim.keymap.set("n", "<leader>vrn", function() vim.lsp.buf.rename() end, opts)
-    vim.keymap.set("i", "<C-h>", function() vim.lsp.buf.signature_help() end, opts)
-    vim.keymap.set("n", "=", function () vim.lsp.buf.format() end,opts)
-    vim.opt.tabstop = 2
-    vim.opt.shiftwidth = 2
-end
-
-lspconfig["dartls"].setup {
-    on_attach = dart_on_attach,
+-- dartls
+vim.lsp.config('dartls', {
+    on_attach = function(client, bufnr)
+        vim.opt.tabstop = 2
+        vim.opt.shiftwidth = 2
+    end,
     settings = {
         dart = {
             analysisExcludedFolders = {
@@ -59,12 +62,18 @@ lspconfig["dartls"].setup {
             }
         }
     }
-}
-lsp_zero.on_attach(on_attach)
+})
 
+-- cssmodules_ls
+vim.lsp.config('cssmodules_ls', {
+    on_attach = function(client, bufnr)
+        client.server_capabilities.definitionProvider = false
+    end,
+})
+
+-- Mason
 require('mason').setup({})
 require('mason-lspconfig').setup({
-    -- list of lsp, npm is needed for using pyright
     ensure_installed = {
         'pyright',
         'lua_ls',
@@ -75,59 +84,18 @@ require('mason-lspconfig').setup({
         'cssmodules_ls',
         'gopls',
         'jsonls',
-        'ts_ls'},
-    handlers = {
-        lsp_zero.default_setup,
-        lua_ls = function()
-            local lua_opts = lsp_zero.nvim_lua_ls()
-            require('lspconfig').lua_ls.setup(lua_opts)
-        end,
-    }
+        'ts_ls',
+    },
+    automatic_enable = true,  -- automatically calls vim.lsp.enable() for installed servers
 })
 
-lspconfig.cssmodules_ls.setup {
-    on_attach = function (client, bfnr)
-        -- avoid accepting `definitionProvider` responses from this LSP
-        client.server_capabilities.definitionProvider = false
-        on_attach(client, bfnr)
-    end,
-}
-
--- Tab stops. Plz dont judge.
-
-vim.cmd[[
-  autocmd FileType json setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
-]]
-
-vim.cmd[[
-  autocmd FileType dart setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
-]]
-
-vim.cmd[[
-  autocmd FileType python setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
-]]
-
-vim.cmd[[
-  autocmd FileType cpp setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
-]]
-
-
-vim.cmd[[
-  autocmd FileType javascript setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
-]]
-
-
-vim.cmd[[
-  autocmd FileType javascriptreact setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
-]]
-
-
-vim.cmd[[
-  autocmd FileType typescript setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
-]]
-
-
-vim.cmd[[
-  autocmd FileType typescriptreact setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
-]]
-
+-- Tab stops
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = { "json", "dart", "python", "cpp", "javascript", "javascriptreact", "typescript", "typescriptreact" },
+    callback = function()
+        vim.opt_local.tabstop = 2
+        vim.opt_local.shiftwidth = 2
+        vim.opt_local.softtabstop = 2
+        vim.opt_local.expandtab = true
+    end
+})
