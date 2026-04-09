@@ -4,6 +4,7 @@
 
 1. Install [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 2. Install [ripgrep](https://github.com/BurntSushi/ripgrep)
+3. Install [tree-sitter-cli](https://crates.io/crates/tree-sitter-cli)
 
 ## DISCLAIMAR
 
